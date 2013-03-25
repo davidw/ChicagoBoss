@@ -17,6 +17,7 @@
         model_path/0,
         model_path/1,
         routes_file/1,
+        root_priv_dir/1,
         static_path/1,
         test_list/1,
         test_path/0,
@@ -25,6 +26,7 @@
         view_html_tags_path/0,
         view_filter_helper_list/1,
         view_tag_helper_list/1,
+        view_module_list/1,
         template_adapter_for_extension/1,
         template_extensions/0,
         is_controller_present/3,
@@ -34,7 +36,7 @@
         web_controller_path/0,
         web_view_path/0,
         web_view_path/2,
-        web_view_path/3
+	 web_view_path/3
     ]).
 
 root_dir() -> filename:absname(""). %filename:join([filename:dirname(code:which(?MODULE)), ".."]).
@@ -142,6 +144,13 @@ web_controller_list(AppName) ->
             lists:map(fun atom_to_list/1, boss_env:get_env(AppName, controller_modules, []))
     end.
 
+view_module_list(AppName) ->
+    case boss_env:is_developing_app(AppName) of
+        true -> [];
+        false ->
+            lists:map(fun atom_to_list/1, boss_env:get_env(AppName, view_modules, []))
+    end.
+
 is_controller_present(Application, Controller, ModuleList) ->
     (lists:member(web_controller(Application, Controller), ModuleList)
         orelse lists:member(web_controller_ex(Application, Controller), ModuleList)).
@@ -225,3 +234,4 @@ module_list1([Dir|Rest], Application, ModuleAcc) ->
 
 dot_app_src(AppName) ->
 	filename:join(["src", lists:concat([AppName, ".app.src"])]).
+
